@@ -47,7 +47,7 @@ module ShopifyApp
     end
 
     def current_shopify_domain
-      sanitized_shop_name || current_shopify_session&.shop
+      current_shopify_session&.shop
     rescue *INVALID_SHOPIFY_ID_TOKEN_ERRORS => e
       respond_to_invalid_shopify_id_token(e)
     end
