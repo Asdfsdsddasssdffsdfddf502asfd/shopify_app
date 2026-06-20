@@ -19,6 +19,9 @@ module ShopifyApp
     def activate_shopify_session(&block)
       retrieve_session_from_token_exchange if current_shopify_session.blank? || should_exchange_expired_token?
 
+      reject_mismatched_shop_param!
+      return if performed?
+
       ShopifyApp::Logger.debug("Activating Shopify session")
       ShopifyAPI::Context.activate_session(current_shopify_session)
       with_token_refetch(current_shopify_session, shopify_id_token, &block)
