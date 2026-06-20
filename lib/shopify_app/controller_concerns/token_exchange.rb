@@ -57,6 +57,21 @@ module ShopifyApp
 
     private
 
+    def reject_mismatched_shop_param!
+      return if sanitized_shop_name.blank?
+    
+      authenticated_shop = current_shopify_session&.shop
+      return if authenticated_shop.blank?
+      return if sanitized_shop_name == authenticated_shop
+    
+      ShopifyApp::Logger.debug(
+        "Rejecting mismatched shop param: param=#{sanitized_shop_name}, session=#{authenticated_shop}"
+      )
+    
+      unauthorized_response = { message: :unauthorized }
+      render(json: { errors: [unauthorized_response] }, status: :unauthorized)
+    end
+
     def retrieve_session_from_token_exchange
       @current_shopify_session = nil
       ShopifyApp::Auth::TokenExchange.perform(shopify_id_token)
